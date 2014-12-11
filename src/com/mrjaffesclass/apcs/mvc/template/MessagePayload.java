@@ -8,34 +8,31 @@ package com.mrjaffesclass.apcs.mvc.template;
  * @version 1.0
  */
 public class MessagePayload {
-  
-  private final int field;
-  private final int direction;
-  
+  private final int directionX;
+  private final int directionY;
   /**
    * Class constructor
-   * @param _field Text field 1 or 2
-   * @param _direction Direction (Constants.UP or Constants.DOWN)
+   * @param _directionX Direction (1 - 8)
+   * @param _directionY Direction (1 - 8)
    */
-  public MessagePayload(int _field, int _direction) {
-    field = _field;
-    direction = _direction;
+  public MessagePayload(int _directionX, int _directionY) {
+    directionX = _directionX;
+    directionY = _directionY;
   }
-  
   /**
-   * Getter method for the direction
-   * @return Field value
+   * Getter method for Y direction
+   * @return directionY
    */
-  public int getDirection() {
-    return direction;
+  public int getDirectionY() {
+    return directionY;     
   }
-  
   /**
-   * Getter method for the 
-   * @return 
+   * Getter method for the X direction
+   * @return directionX
    */
-  public int getField() {
-    return field;
+  public int getDirectionX() {
+    return directionX;
   }
+
   
 }
