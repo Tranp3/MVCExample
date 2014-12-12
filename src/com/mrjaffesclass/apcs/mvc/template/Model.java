@@ -11,7 +11,7 @@ public class Model implements MessageHandler {
 
   // Messaging system for the MVC
   private final Messenger mvcMessaging;
-
+  private final int LIVE = 3;
   // Model's data variables
   private int variable1;
   private int variable2;
@@ -29,34 +29,35 @@ public class Model implements MessageHandler {
    * Initialize the model here and subscribe to any required messages
    */
   public void init() {
-    mvcMessaging.subscribe("controller:changeButton", this);
-    setVariable1(10);
-    setVariable2(-10);
+    mvcMessaging.subscribe("view:changeButton", this);
+    setVariable1(LIVE);
+    setVariable2(0);
   }
   
   @Override
   public void messageHandler(String messageName, Object messagePayload) {
     if (messagePayload != null) {
-      System.out.println("RCV (model): "+messageName+" | "+messagePayload.toString());
+      System.out.println("MSG: received by model: "+messageName+" | "+messagePayload.toString());
     } else {
-      System.out.println("RCV (model): "+messageName+" | No data sent");
+      System.out.println("MSG: received by model: "+messageName+" | No data sent");
     }
     MessagePayload payload = (MessagePayload)messagePayload;
-    int field = payload.getField();
-    int direction = payload.getDirection();
-    
-    if (direction == Constants.UP) {
-      if (field == 1) {
-        setVariable1(getVariable1()+Constants.UP);
-      } else {
-        setVariable2(getVariable2()+Constants.UP);
-      }
-    } else {
-      if (field == 1) {
-        setVariable1(getVariable1()+Constants.DOWN);
-      } else {
-        setVariable2(getVariable2()+Constants.DOWN);
-      }      
+    int directionX = payload.getDirectionX();
+    int directionY = payload.getDirectionY();
+    if (messageName.equals("view:changeButton")) {
+        if (board[directionX][directionY] == BLANK)
+            {
+                if (getVariable1() != 0){
+                setVariable2(getVariable2() +1);
+                mvcMessaging.notify("model:minecheck", 0, true);
+                }
+            }
+            else if(board[directionX][directionY] == MINE){
+                if (getVariable1() != 0){
+                    mvcMessaging.notify("model:minecheck", 1, true); 
+                    setVariable1(getVariable1() -1);
+                }
+            }
     }
   }
 
@@ -74,6 +75,9 @@ public class Model implements MessageHandler {
    */
   public void setVariable1(int v) {
     variable1 = v;
+    // When we set a new value to variable 1 we need to also send a
+    // message to let other modules know that the variable value
+    // was changed
     mvcMessaging.notify("model:variable1Changed", variable1, true);
   }
   
@@ -91,6 +95,9 @@ public class Model implements MessageHandler {
    */
   public void setVariable2(int v) {
     variable2 = v;
+    // When we set a new value to variable 2 we need to also send a
+    // message to let other modules know that the variable value
+    // was changed
     mvcMessaging.notify("model:variable2Changed", variable2, true);
   }
 
